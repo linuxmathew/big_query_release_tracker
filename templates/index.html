@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-database animate-pulse"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <p>Release Notes Hub</p>
+                </div>
+            </div>
+            
+            <div class="search-filter-section">
+                <!-- Search -->
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search updates..." autocomplete="off">
+                    <button id="clear-search" class="clear-btn" style="display: none;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="filter-group">
+                    <button class="filter-btn active" data-type="all">
+                        <span class="dot"></span> All
+                    </button>
+                    <button class="filter-btn" data-type="feature">
+                        <span class="dot feature"></span> Features
+                    </button>
+                    <button class="filter-btn" data-type="change">
+                        <span class="dot change"></span> Changes
+                    </button>
+                    <button class="filter-btn" data-type="deprecation">
+                        <span class="dot deprecation"></span> Deprecations
+                    </button>
+                    <button class="filter-btn" data-type="fix">
+                        <span class="dot fix"></span> Fixes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats & Action Info -->
+            <div class="stats-card">
+                <div class="stat-item">
+                    <span class="stat-value" id="stats-total">0</span>
+                    <span class="stat-label">Updates Found</span>
+                </div>
+                <div class="action-hint">
+                    <i class="fa-solid fa-info-circle"></i>
+                    <span>Click any item to compose a Tweet about it!</span>
+                </div>
+            </div>
+
+            <!-- Refresh Button Container -->
+            <div class="header-actions">
+                <button id="refresh-btn" class="refresh-button">
+                    <i class="fa-solid fa-arrows-rotate spinner-icon"></i>
+                    <span class="refresh-text">Refresh Feed</span>
+                </button>
+                <div class="last-updated" id="last-updated-time">Last updated: Never</div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="content-viewport">
+            <!-- Feed Container -->
+            <div class="feed-header">
+                <h2>Recent Updates</h2>
+                <span class="feed-subtitle">Direct from Google Cloud Platform</span>
+            </div>
+            
+            <div class="updates-feed" id="updates-feed">
+                <!-- Skeleton Loader -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Twitter/X Composer Modal -->
+    <div class="modal-overlay" id="composer-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-header-title">
+                    <i class="fa-brands fa-x-twitter"></i>
+                    <h3>Compose Post</h3>
+                </div>
+                <button class="modal-close" id="close-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-split">
+                    <!-- Editor Left -->
+                    <div class="editor-pane">
+                        <label for="tweet-textarea" class="input-label">Edit Post Draft</label>
+                        <div class="textarea-wrapper">
+                            <textarea id="tweet-textarea" maxlength="280" placeholder="What's happening in BigQuery?"></textarea>
+                            <div class="character-progress">
+                                <div class="progress-ring-container">
+                                    <svg class="progress-ring" width="30" height="30">
+                                        <circle class="progress-ring__circle" stroke="#2f3336" stroke-width="2" fill="transparent" r="12" cx="15" cy="15"/>
+                                        <circle id="progress-circle" class="progress-ring__circle" stroke="#1d9bf0" stroke-width="2.5" fill="transparent" r="12" cx="15" cy="15"/>
+                                    </svg>
+                                    <span id="char-counter" class="char-counter">280</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editor-suggestions">
+                            <span class="suggestion-tag" onclick="insertHashtag('#BigQuery')">#BigQuery</span>
+                            <span class="suggestion-tag" onclick="insertHashtag('#GoogleCloud')">#GoogleCloud</span>
+                            <span class="suggestion-tag" onclick="insertHashtag('#DataEngineering')">#DataEngineering</span>
+                            <span class="suggestion-tag" onclick="insertHashtag('#GCP')">#GCP</span>
+                        </div>
+                    </div>
+
+                    <!-- Live X Preview Right -->
+                    <div class="preview-pane">
+                        <span class="input-label">Live Preview on X</span>
+                        <div class="tweet-preview-card">
+                            <div class="tweet-header">
+                                <div class="user-avatar">
+                                    <i class="fa-solid fa-user-astronaut"></i>
+                                </div>
+                                <div class="user-meta">
+                                    <div class="user-names">
+                                        <span class="display-name">Cloud Explorer</span>
+                                        <span class="handle">@cloud_explorer</span>
+                                    </div>
+                                    <div class="tweet-badge">Draft</div>
+                                </div>
+                            </div>
+                            <div class="tweet-content" id="tweet-preview-text">
+                                Draft your post to see it previewed here live!
+                            </div>
+                            <div class="tweet-footer">
+                                <span><i class="fa-regular fa-comment"></i> 0</span>
+                                <span><i class="fa-regular fa-retweet"></i> 0</span>
+                                <span><i class="fa-regular fa-heart"></i> 0</span>
+                                <span><i class="fa-regular fa-bookmark"></i></span>
+                                <span><i class="fa-regular fa-share-nodes"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-copy">
+                    <i class="fa-solid fa-copy"></i> Copy Content
+                </button>
+                <button class="btn btn-primary" id="btn-tweet">
+                    <i class="fa-brands fa-x-twitter"></i> Post to X
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle toast-icon"></i>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Application Script -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
