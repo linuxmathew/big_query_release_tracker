@@ -1,10 +1,13 @@
 import os
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+# pyrefly: ignore [missing-import]
 from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
 
+# Core feed fetcher
 def fetch_and_parse_notes():
     url = "https://cloud.google.com/feeds/bigquery-release-notes.xml"
     req = urllib.request.Request(
@@ -43,6 +46,7 @@ def fetch_and_parse_notes():
         
     return raw_entries
 
+# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -56,5 +60,4 @@ def get_notes():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
-    # Run on port 5001 to avoid conflicts
     app.run(host='0.0.0.0', port=5001, debug=True)

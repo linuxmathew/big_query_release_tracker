@@ -24,6 +24,12 @@ const progressCircle = document.getElementById('progress-circle');
 const closeModalBtn = document.getElementById('close-modal');
 const copyBtn = document.getElementById('btn-copy');
 const tweetBtn = document.getElementById('btn-tweet');
+const tweetBtnText = document.getElementById('tweet-btn-text');
+
+// Live Preview User Cards
+const previewDisplayName = document.getElementById('preview-display-name');
+const previewHandle = document.getElementById('preview-handle');
+const previewBadge = document.getElementById('preview-badge');
 
 // Toast Notification
 const toast = document.getElementById('toast');
@@ -82,12 +88,14 @@ function setupEventListeners() {
         });
     });
 
-    // Send Tweet (Open X Intent)
+    // Send Post (Web Intent Fallback)
     tweetBtn.addEventListener('click', () => {
-        const text = encodeURIComponent(tweetTextarea.value);
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
+        const text = tweetTextarea.value;
+        const encodedText = encodeURIComponent(text);
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
         window.open(twitterUrl, '_blank', 'width=550,height=420');
-        showToast('Redirecting to X...', 'fa-brands fa-x-twitter', '#1d9bf0');
+        showToast('Opening Web Intent...', 'fa-brands fa-x-twitter', '#1d9bf0');
+        hideModal();
     });
 
     // Textarea input sync for character count & live preview
@@ -322,6 +330,9 @@ function openComposer(note) {
     
     tweetTextarea.value = draftText;
     updateTweetCounter(draftText);
+    
+    // Set Tweet button label
+    tweetBtnText.textContent = 'Post to X';
     
     composerModal.classList.add('active');
 }
